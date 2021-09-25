@@ -19,17 +19,56 @@ int main(int argc, char *argv[]) {
 
     //text_input_functions
     text_str.dynamic_memory = text_read(argv[1], text_str.txt_file, &text_str.file_size);
-    //printf("%d", text_str.file_size);
 
     text_str.file_n_strings = text_ptrs_realoc_to_nstings(&text_str.orig_lines, &text_str.text_lines_starts_index, &text_str.dynamic_memory, text_str.file_size);
-    /*if (text_str.dynamic_memory[26] == '\0') {
-        printf("yes\n");
-    }*/
-    //printf("%d\n", text_str.text_lines_starts_index[13]);
 
-    //text_create_ptrs(&text_str.orig_lines, &text_str.dynamic_memory, text_str.file_n_strings, text_str.text_lines_starts_index);
-    //printf("%s\n", text_str.orig_lines[0]);
-    //printf("%s", text_str.orig_lines);
+    text_create_ptrs(&text_str.orig_lines, &text_str.dynamic_memory, text_str.file_n_strings, text_str.text_lines_starts_index);
+
+    //sort part
+    text_str.sorted_lines = (char **)calloc(text_str.file_n_strings, sizeof(char *));
+    for (int str = 0; str < text_str.file_n_strings; str++) {
+        text_str.sorted_lines[str] = text_str.orig_lines[str];
+    }
+
+    int sort_method = choose_method_of_sorting();
+
+    switch (sort_method) {
+        case 0:
+            printf("you choose begin\n");
+            my_qsort((void *)text_str.sorted_lines, text_str.file_n_strings, sizeof(char *), cmp);
+            break;
+
+        case 1:
+            printf("you choose end\n");
+            my_qsort((void *)text_str.sorted_lines, text_str.file_n_strings, sizeof(char *), cmp_reverse);
+            break;
+
+        default:
+            printf("Incorrect data: use only program sorts\n");
+            exit(0);
+    }
+
+    //output part
+    FILE *outut_file = fopen("output_onegin.txt", "w");
+    fprintf(outut_file, "\nsorted\n");
+    text_to_file(text_str.sorted_lines, text_str.file_n_strings, outut_file);
+    fprintf(outut_file, "\norigin\n");
+    text_to_file(text_str.orig_lines, text_str.file_n_strings, outut_file);
+
+    printf("origin\n\n");
+    for (int str = 0; str < text_str.file_n_strings; str++) {
+        printf("%s\n", text_str.orig_lines[str]);
+    }
+
+    printf("sorted\n\n");
+    for (int str = 0; str < text_str.file_n_strings; str++) {
+        printf("%s\n", text_str.sorted_lines[str]);
+    }
+
+    free(text_str.orig_lines);
+    free(text_str.dynamic_memory);
+    free(text_str.sorted_lines);
+    free(text_str.text_lines_starts_index);
 
     return 0;
 }
