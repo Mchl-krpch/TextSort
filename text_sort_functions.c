@@ -5,8 +5,6 @@
 
 #include "text_sort_functions.h"
 
-int const INT_NAN = -1;
-
 int choose_method_of_sorting() {
     int temporary_method = INT_NAN;
     printf("How should i sort strings?\n"
@@ -20,7 +18,7 @@ int choose_method_of_sorting() {
     return temporary_method;
 }
 
-void my_qsort(void *arr, size_t n_of_element, size_t size_of_element, int (*cmp)(const void *a, const void *b)){
+void my_qsort(void *arr, size_t n_of_element, size_t size_of_element, int (*cmp)(const void *a, const void *b)) {
     assert (arr != nullptr);
     assert (cmp != nullptr);
 
@@ -117,21 +115,27 @@ int swap(void *elem1, void *elem2, size_t size_of_element) {
 
     while (size_of_element > 0) {
         if (size_of_element >= 8) {
-            uint64_t tmp = *(uint64_t*) elem1;
-            *(uint64_t*) elem1 = *(uint64_t*) elem2;
-            *(uint64_t*) elem2 = tmp;
+            uint64_t tmp = *(uint64_t *) elem1;
+            *(uint64_t *) elem1 = *(uint64_t *) elem2;
+            *(uint64_t *) elem2 = tmp;
         } else {
-            uint8_t tmp = *(uint8_t*) elem1;
-            *(uint8_t*) elem1 = *(uint8_t*) elem2;
-            *(uint8_t*) elem2 = tmp;
+            uint8_t tmp = *(uint8_t *) elem1;
+            *(uint8_t *) elem1 = *(uint8_t *) elem2;
+            *(uint8_t *) elem2 = tmp;
         }
 
         size_t step = (size_of_element >= 8 ? 8 : 1);
         size_of_element -= step;
 
-        elem1 = (char *)elem1 + step;
-        elem2 = (char *)elem2 + step;
+        elem1 = (char *) elem1 + step;
+        elem2 = (char *) elem2 + step;
     }
 
     return 0;
+}
+
+void array_copy(char **from, char **to, size_t array_len) {
+    for (int str = 0; str < array_len; str++) {
+        to[str] = from[str];
+    }
 }
