@@ -8,6 +8,10 @@
 
 struct Repository text_str;
 
+/// \brief главная функция принимает из консоли называния файла формата "file.txt"
+/// \param argc количество аргументов командной строки. Если он один (аргумент самой программы) запускается help - режим
+/// \param argv хранит в себе аргументы командной строки
+/// \return
 int main(int argc, char *argv[]) {
     //console.h
     encoding_set_rus();
@@ -20,27 +24,27 @@ int main(int argc, char *argv[]) {
     //text_input_functions
     text_str.dynamic_memory = text_read(argv[1], text_str.txt_file, &text_str.file_size);
 
-    text_str.file_n_strings = text_ptrs_realoc_to_nstings(&text_str.orig_lines, &text_str.text_lines_starts_index, &text_str.dynamic_memory, text_str.file_size);
+    text_str.file_n_strings = text_ptrs_realoc_to_nstings(&text_str.orig_lines, &text_str.text_lines_starts_index,
+                                                          &text_str.dynamic_memory, text_str.file_size);
 
-    text_create_ptrs(&text_str.orig_lines, &text_str.dynamic_memory, text_str.file_n_strings, text_str.text_lines_starts_index);
+    text_create_ptrs(&text_str.orig_lines, &text_str.dynamic_memory, text_str.file_n_strings,
+                     text_str.text_lines_starts_index);
 
     //sort part
-    text_str.sorted_lines = (char **)calloc(text_str.file_n_strings, sizeof(char *));
-    for (int str = 0; str < text_str.file_n_strings; str++) {
-        text_str.sorted_lines[str] = text_str.orig_lines[str];
-    }
+    text_str.sorted_lines = (char **) calloc(text_str.file_n_strings, sizeof(char *));
+    array_copy(text_str.orig_lines, text_str.sorted_lines, text_str.file_n_strings);
 
     int sort_method = choose_method_of_sorting();
 
     switch (sort_method) {
-        case 0:
+        case SORTING_BEGIN:
             printf("you choose begin\n");
-            my_qsort((void *)text_str.sorted_lines, text_str.file_n_strings, sizeof(char *), cmp);
+            my_qsort((void *) text_str.sorted_lines, text_str.file_n_strings, sizeof(char *), cmp);
             break;
 
-        case 1:
+        case SORTING_END:
             printf("you choose end\n");
-            my_qsort((void *)text_str.sorted_lines, text_str.file_n_strings, sizeof(char *), cmp_reverse);
+            my_qsort((void *) text_str.sorted_lines, text_str.file_n_strings, sizeof(char *), cmp_reverse);
             break;
 
         default:
@@ -55,14 +59,14 @@ int main(int argc, char *argv[]) {
     fprintf(outut_file, "\norigin\n");
     text_to_file(text_str.orig_lines, text_str.file_n_strings, outut_file);
 
-    printf("origin\n\n");
-    for (int str = 0; str < text_str.file_n_strings; str++) {
-        printf("%s\n", text_str.orig_lines[str]);
-    }
-
     printf("sorted\n\n");
     for (int str = 0; str < text_str.file_n_strings; str++) {
         printf("%s\n", text_str.sorted_lines[str]);
+    }
+
+    printf("origin\n\n");
+    for (int str = 0; str < text_str.file_n_strings; str++) {
+        printf("%s\n", text_str.orig_lines[str]);
     }
 
     free(text_str.orig_lines);
