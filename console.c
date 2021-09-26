@@ -14,4 +14,3 @@ void encoding_set_rus() {
 void print_help_onegin() {
     printf("%s", help);
 }
-
