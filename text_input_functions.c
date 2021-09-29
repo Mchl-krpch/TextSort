@@ -10,7 +10,22 @@ void txt_struct_ctor(char *argv, Text_struct *txt) {
     assert  (txt && "txt_ctor: txt is nullptr");
 
     txt->text_buffer = text_read(txt, argv);
+
+    txt->number_of_strings = count_strings_in_buffer(txt->text_buffer, txt->buffer_size);
+    printf("\ntemp number of strings: %d", txt->number_of_strings);
+
     txt->number_of_strings = create_ptr_begin_and_ptr_end(txt);
+}
+
+size_t count_strings_in_buffer (char *buffer, size_t buffer_size) {
+    size_t temporary_number_of_strings = 0;
+    for (int ch = 0; ch < buffer_size; ch++) {
+        if (buffer[ch] == '\n') {
+            temporary_number_of_strings++;
+        }
+    }
+
+    return temporary_number_of_strings;
 }
 
 char *text_read(Text_struct *txt, char *argv) {
@@ -21,7 +36,7 @@ char *text_read(Text_struct *txt, char *argv) {
 
     txt->buffer_size = get_size(txt->txt_file);
 
-    char *dynamic_memory = (char *) calloc(txt->buffer_size, sizeof(char));
+    char *dynamic_memory = (char *) calloc(txt->buffer_size + 1, sizeof(char));
     txt->buffer_size = fread(dynamic_memory, sizeof(char), txt->buffer_size, txt->txt_file);
 
     fclose(txt->txt_file);
@@ -47,19 +62,20 @@ int create_ptr_begin_and_ptr_end(Text_struct *txt) {
 
     txt->sorted_pointers->ptr_begin = &txt->text_buffer[0];
 
-    for (size_t temporary_size = 0; temporary_size < txt->buffer_size; temporary_size++) {//for
+    for (size_t temporary_size = 0; temporary_size < txt->buffer_size + 1; temporary_size++) {//for
         temporary_str_len++;
         if (txt->text_buffer[temporary_size] == '\n') {
             txt->sorted_pointers[temporary_number_of_strings - 1].str_len = temporary_str_len;
             temporary_str_len = 0;
             
-            if (txt->text_buffer[temporary_size + 1] != EOF) {
+            if (txt->text_buffer[temporary_size + 1] != '\n') {
                 txt->sorted_pointers[temporary_number_of_strings].ptr_begin = &txt->text_buffer[temporary_size + 1];
             }
             temporary_number_of_strings++;
         }
     }
-    txt->text_buffer[txt->buffer_size] = '\0';
+    txt->text_buffer[txt->buffer_size + 1] = '\0';
+
     txt->sorted_pointers = (Line_info *)realloc((Line_info *)txt->sorted_pointers, temporary_number_of_strings * sizeof(Line_info) );
 
     return temporary_number_of_strings;
