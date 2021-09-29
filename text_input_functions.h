@@ -40,6 +40,13 @@ char *text_read(Text_struct *txt, char *argv);
 /// \return
 size_t get_size(FILE *txt_file);
 
+
+///\brief return number of strings in buffer, get char *buffer and it's size
+/// \param buffer received buffer
+/// \param buffer_size size of received buffer
+/// \return
+size_t count_strings_in_buffer(char *buffer, size_t buffer_size);
+
 ///\brief creates mmarray of size pointers equal to the number of lines in the text file
 /// \param array_of_pointers an array of pointers where the addresses of the beginning of lines of a text document are stored
 /// \param text_lents_strint array of string lengths where the index is stored (starting from the zero element of the dynamic text array) where the string begins
