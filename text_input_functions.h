@@ -12,7 +12,7 @@ struct Line_info {
 ///\brief suggested structure to work with .txt file
 ///\param txt_file text document FILE* which keep input_file.txt
 ///\param buffer_size size of dynamic buffer in bites
-///\param number_of_strings количество строк в файле
+///\param number_of_strings number of strings in text file
 ///\param text_buffer array which keeps text of file
 struct Text_struct {
     FILE *txt_file               = NULL;
@@ -30,8 +30,8 @@ void txt_struct_ctor(char *argv, Text_struct *text_str);
 
 ///\brief reads text file and save him in text_buffer
 /// \param argv int form char * (file.txt) which get from console
-/// \param txt_file хранимый текстовый файл
-/// \param file_size размер файла в байтах
+/// \param txt_file saved text file
+/// \param file_size size of text in bites
 /// \return
 char *text_read(Text_struct *txt, char *argv);
 
