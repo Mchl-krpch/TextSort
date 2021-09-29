@@ -1,51 +1,55 @@
 #ifndef ONEGIN6_TEXT_INPUT_FUNCTIONS_H
 #define ONEGIN6_TEXT_INPUT_FUNCTIONS_H
 
-#include <cstdio>
+#include <stdio.h>
 
-///\brief предлагаемая структура хранения информации о файле
-///\param txt_file текстовый документ типа FILE* который хранит input_file.txt
-///\param file_size размер файла в байтах
-///\param file_n_strings количество строк в файле
-///\param dynamic_memory массив, куда считывается весь текст, хранится в динамической памяти
-struct Repository {
-    FILE *txt_file;
-    size_t file_size;
-    size_t file_n_strings;
-    char *dynamic_memory;
-    //struct Line_info *origin_text;
-    char **orig_lines;
-    int *text_lines_starts_index;
-    char **sorted_lines;
-    //struct Line_info *sorted_text;
+///\brief structure which store pointer of begin and end of any string in in the read file
+struct Line_info {
+    char *ptr_begin;
+    size_t  str_len;
 };
 
-///\brief функция, которая считывает текстовый файл полностью в динамически-расширяемый массив
-/// \param argv имя файла формата (file.txt) который считывается с консоли
+///\brief suggested structure to work with .txt file
+///\param txt_file text document FILE* which keep input_file.txt
+///\param buffer_size size of dynamic buffer in bites
+///\param number_of_strings количество строк в файле
+///\param text_buffer array which keeps text of file
+struct Text_struct {
+    FILE *txt_file               = NULL;
+    size_t buffer_size           = NULL;
+    size_t number_of_strings     = NULL;
+    char *text_buffer            = NULL;
+    Line_info *sorted_pointers   = NULL;
+    size_t mode_of_sorting       = NULL;
+};
+
+/// \ brief function creates a buffer where all text and an array of pointers to the beginning and end of lines will be saved
+/// \ param argv the name of the file that is opened to read the text
+/// \ param text_str is a structure containing a buffer where text can be stored in dynamic memory
+void txt_struct_ctor(char *argv, Text_struct *text_str);
+
+///\brief reads text file and save him in text_buffer
+/// \param argv int form char * (file.txt) which get from console
 /// \param txt_file хранимый текстовый файл
 /// \param file_size размер файла в байтах
 /// \return
-char *text_read(char *argv, FILE *txt_file, size_t *file_size);
+char *text_read(Text_struct *txt, char *argv);
 
-///\brief возвращает размер тектового файла в байтах
-/// \param txt_file текстовый файл, размер которого хотим узнать
+///\brief returns size of text document in bites
+/// \param txt_file
 /// \return
-size_t text_get_size(FILE *txt_file);
+size_t get_size(FILE *txt_file);
 
-///\brief создает ммассив указателей размера равным количеству строк в текстовом файле
-/// \param array_of_pointers массив указателей, куда сохраняются адреса начала строк текстового документа
-/// \param text_lents_strint  массив длин строк, где хранится индекс (начиная от нулевого элемента массива dynamic text) где начинается строка
-/// \param dynamic_text массив, где хранится текст
-/// \param text_size размер текста в байтах
+///\brief creates mmarray of size pointers equal to the number of lines in the text file
+/// \param array_of_pointers an array of pointers where the addresses of the beginning of lines of a text document are stored
+/// \param text_lents_strint array of string lengths where the index is stored (starting from the zero element of the dynamic text array) where the string begins
+/// \param dynamic_text array where text is stored
+/// \param text_size text size in bytes
 /// \return
-int
-text_ptrs_realoc_to_nstings(char ***array_of_pointers, int **text_lents_strint, char **dynamic_text, size_t text_size);
+int create_ptr_begin_and_ptr_end(Text_struct *txt);
 
-///\brief помещает адреса в массив указателей на начала строк
-/// \param pointers массив указателей на начала строк
-/// \param dynamic_memory динамическая память
-/// \param file_n_strings количество строк в текстовом файле
-/// \param text_lines_starts_index массив с индексами начал строк по тексту
-void text_create_ptrs(char ***pointers, char **dynamic_memory, size_t file_n_strings, int *text_lines_starts_index);
+///\brief clears dynamic memory from the created array of pointers and the buffer with the source text
+/// \param text_str a supplied structure that contains pointers to buffers in heap
+void txt_struct_dtor(Text_struct *text_str);
 
 #endif //ONEGIN6_TEXT_INPUT_FUNCTIONS_H
