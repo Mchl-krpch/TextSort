@@ -12,7 +12,6 @@ void txt_struct_ctor(char *argv, Text_struct *txt) {
     txt->text_buffer = text_read(txt, argv);
 
     txt->number_of_strings = count_strings_in_buffer(txt->text_buffer, txt->buffer_size);
-    printf("\ntemp number of strings: %d", txt->number_of_strings);
 
     txt->number_of_strings = create_ptr_begin_and_ptr_end(txt);
 }
@@ -32,7 +31,7 @@ char *text_read(Text_struct *txt, char *argv) {
     assert(txt != nullptr  && "text_read: txt is nullptr\n");
     assert(argv != nullptr && "text_read: argv is nullptr\n");
 
-    fopen_s(&txt->txt_file, &argv[0], "r");
+    fopen_s(&txt->txt_file, argv, "r");
 
     txt->buffer_size = get_size(txt->txt_file);
 
