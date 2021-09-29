@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) {
 
     my_sort_and_print(&text_str, output_file);
 
+    fclose(output_file);
     txt_struct_dtor(&text_str);
 
     return 0;
