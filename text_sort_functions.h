@@ -1,52 +1,63 @@
 #ifndef ONEGIN6_TEXT_SORT_FUNCTIONS_H
 #define ONEGIN6_TEXT_SORT_FUNCTIONS_H
 
-///\param INT_NAN начальное значение, которое сигнализирует о том, что переменная еще не введена пользователем или не изменена программой
+#include "text_input_functions.h"
+
+///\param INT_NAN an initial value that signals that the variable has not
+/// yet been entered by the user or changed by the program
 int const INT_NAN = -1;
 
 enum {
-    ///\param SORTING_BEGIN показывает, что выбран режим лексикографического сравнения с начала строки
+    ///\param SORTING_BEGIN shows that the mode of lexicographic comparison from the beginning of the line is selected
     SORTING_BEGIN = 0,
-    ///\param SORTING_END показывает, что выбран режим лексикографического сравнения с конца строки
+    ///\param SORTING_END indicates that the lexicographic comparison from the end of the line is selected
     SORTING_END = 1
 };
 
-///\brief возвращает номер режима типа **int**
+///\brief sorts the entered text in user-selected sorts and outputs it to a specific file
+/// \param text_str is a text structure that contains an array of pointers to lines of the original text
+/// \param output_file file to output sorted and original text
+void my_sort_and_print(Text_struct *text_str, FILE *output_file);
+
+///\brief returns mode number like **int**
 int choose_method_of_sorting();
 
-///\brief принимает массив "from" и массив "to" и размеры массивов (они должны быть равны)
-/// \param from откуда копируются элементы массива
-/// \param to куда копируются элементы массива
-/// \param array_len длина массивов
-void array_copy(char **from, char **to, size_t array_len);
+///brief a special compiler that can determine where the user wants to sort the string from (start or end)
+int str_cmp_with_mode(const void *a, const void *b, int mode);
 
-/// \brief аналогична функции qsort принимает массив типа (void *) количество элементов, размер одного элемента и функцию компоратора
-/// \param arr массив типа (void *)
-/// \param n_of_element количество элементов
-/// \param size_of_element размер одного элемента
-/// \param cmp компоратор
-void my_qsort(void *arr, size_t n_of_element, size_t size_of_element, int (*cmp)(const void *a, const void *b));
+///\brief comparator of two variable types (void *) works with values within one array
+///refers to functions *is_alpha ()** and *equal ()* used by **my_qsort ()**
+/// when using ** SORTING_BEGIN ** method
+int string_cmp(const void *a, const void *b, int step);
 
-///\brief узнает является ли *ch буквой (bool answer = true) или нет (bool answer = false)
-bool is_alpha(char const *ch);
+/// \brief similar to qsort function accepts an array of type (void *) number of elements,
+/// size of one element and a composer function
+/// \param arr array (void *)
+/// \param n_of_element number of elements
+/// \param size_of_element size of one element
+/// \param cmp string comparator
+void my_qsort(void *arr, size_t n_of_element, size_t size_of_element, size_t mode_of_soring, int (*cmp)(const void *a, const void *b, int mode));
 
-///\brief узнает равны ли значения *ch1 и *ch2 (оба значения подается типа (void *)) возвращает 1 если равны, 0 если не равны
-int equal(const void *ch1, const void *ch2);
+///\brief finds out if * ch is a letter (bool answer = true) or not (bool answer = false)
+bool is_letter(char const *ch);
 
-///\brief компоратор двух переменнты типов (void *) работает со значениями в рамках одного массива
-///ссылается на функции *is_alpha()** и *equal()* используется **my_qsort()** при использовании **SORTING_BEGIN** метода
-int cmp(const void *a, const void *b);
-
-///\brief компоратор двух переменнты типов (void *) работает со значениями в рамках одного массива
-///ссылается на функции *is_alpha()** и *equal()* используется **my_qsort()** при использовании **SORTING_END** метода
-int cmp_reverse(const void *a, const void *b);
-
-///\brief меняет местами байты из одного места в другое по циклу сначала по 8 байт, когда
-///суммарный размер непереложенных байт больше 8 байт, и по 1, когда осталось переложить меньше 8-ми байт
-/// \param elem1 сслыка на первый массив байт типа (void *)
-/// \param elem2 сслыка на второй массив байт типа (void *)
-/// \param size_of_element суммарный размер байт, который нужно поменять местами
+///\brief swaps bytes from one place to another in a loop, first by 8 bytes, when
+///the total size of non-swapped bytes is more than 8 bytes, and 1 each when there are less than 8 bytes left to swap
+/// \param elem1 reference to the first byte array of type (void *)
+/// \param elem2 reference to the second byte array of type (void *)
+/// \param size_of_element total size of bytes to be swapped
 /// \return
-int swap(void *elem1, void *elem2, size_t size_of_element);
+int swap(Line_info *elem1, Line_info *elem2, size_t size_of_element);
+
+///\brief takes one step of sorting qsort, swaps the position of the lines and data about the lines
+/// \param start array of structures containing data about strings
+/// \param right array of the "right" element of the string
+/// \param last array of the last element, which will subsequently change with the new pivot
+/// \param tmp middle pivot
+/// \param size_of_element the size of one element that we want to shift
+/// \param mode_of_sorting sorting modification (sorting from end of line / beginning of line)
+/// \param cmp selected comprator
+void partition(void *start, int *right, int *last, int *tmp, size_t size_of_element, size_t mode_of_sorting,
+               int (*cmp)(const void *a, const void *b, int mode));
 
 #endif //ONEGIN6_TEXT_SORT_FUNCTIONS_H
