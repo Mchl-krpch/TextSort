@@ -95,7 +95,7 @@ int string_cmp(const void *a, const void *b, int step) {
     return *ch1 - *ch2;
 }
 
-int swap(Line_info *elem1, Line_info *elem2, size_t size_of_element) {
+int swap(Line_info *elem1, Line_info *ele2, size_t size_of_element) {
     Line_info temp = *(Line_info *) elem1;
     *elem1 = *elem2;
     *elem2 = temp;
