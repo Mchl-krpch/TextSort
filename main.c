@@ -1,78 +1,26 @@
-#include <cstdio>
-#include <cstdlib>
+#include <stdio.h>
 
-#include "console.h"
-#include "text_input_functions.h"
-#include "text_sort_functions.h"
-#include "text_output_functions.h"
+#include "Repos_struct/console.h"
+#include "Repos_struct/text_input_functions.h"
+#include "Repos_struct/text_sort_functions.h"
 
-struct Repository text_str;
-
-/// \brief главная функция принимает из консоли называния файла формата "file.txt"
-/// \param argc количество аргументов командной строки. Если он один (аргумент самой программы) запускается help - режим
-/// \param argv хранит в себе аргументы командной строки
-/// \return
 int main(int argc, char *argv[]) {
-    //console.h
+    Text_struct text_str;
     encoding_set_rus();
 
     if (argc == 1) {
         print_help_onegin();
-        exit(0);
+        return 0;
     }
 
-    //text_input_functions
-    text_str.dynamic_memory = text_read(argv[1], text_str.txt_file, &text_str.file_size);
+    txt_struct_ctor(argv[1], &text_str);
 
-    text_str.file_n_strings = text_ptrs_realoc_to_nstings(&text_str.orig_lines, &text_str.text_lines_starts_index,
-                                                          &text_str.dynamic_memory, text_str.file_size);
+    FILE *output_file;
+    fopen_s(&output_file, "output_onegin.txt", "w");
 
-    text_create_ptrs(&text_str.orig_lines, &text_str.dynamic_memory, text_str.file_n_strings,
-                     text_str.text_lines_starts_index);
+    my_sort_and_print(&text_str, output_file);
 
-    //sort part
-    text_str.sorted_lines = (char **) calloc(text_str.file_n_strings, sizeof(char *));
-    array_copy(text_str.orig_lines, text_str.sorted_lines, text_str.file_n_strings);
-
-    int sort_method = choose_method_of_sorting();
-
-    switch (sort_method) {
-        case SORTING_BEGIN:
-            printf("you choose begin\n");
-            my_qsort((void *) text_str.sorted_lines, text_str.file_n_strings, sizeof(char *), cmp);
-            break;
-
-        case SORTING_END:
-            printf("you choose end\n");
-            my_qsort((void *) text_str.sorted_lines, text_str.file_n_strings, sizeof(char *), cmp_reverse);
-            break;
-
-        default:
-            printf("Incorrect data: use only program sorts\n");
-            exit(0);
-    }
-
-    //output part
-    FILE *outut_file = fopen("output_onegin.txt", "w");
-    fprintf(outut_file, "\nsorted\n");
-    text_to_file(text_str.sorted_lines, text_str.file_n_strings, outut_file);
-    fprintf(outut_file, "\norigin\n");
-    text_to_file(text_str.orig_lines, text_str.file_n_strings, outut_file);
-
-    printf("sorted\n\n");
-    for (int str = 0; str < text_str.file_n_strings; str++) {
-        printf("%s\n", text_str.sorted_lines[str]);
-    }
-
-    printf("origin\n\n");
-    for (int str = 0; str < text_str.file_n_strings; str++) {
-        printf("%s\n", text_str.orig_lines[str]);
-    }
-
-    free(text_str.orig_lines);
-    free(text_str.dynamic_memory);
-    free(text_str.sorted_lines);
-    free(text_str.text_lines_starts_index);
+    txt_struct_dtor(&text_str);
 
     return 0;
 }
