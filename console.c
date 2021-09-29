@@ -1,5 +1,5 @@
 #include <xlocinfo>
-#include <windows.h>
+#include <Windows.h>
 
 #include "console.h"
 
