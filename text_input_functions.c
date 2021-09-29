@@ -1,49 +1,93 @@
-#include <cstdlib>
+#include <assert.h>
+#include <stdlib.h>
 
 #include "text_input_functions.h"
+#include "text_sort_functions.h"
+#include "text_output_functions.h"
 
-char *text_read(char *argv, FILE *txt_file, size_t *file_size) {
-    fopen_s(&txt_file, &argv[0], "r");
+void txt_struct_ctor(char *argv, Text_struct *txt) {
+    assert(argv && "txt_ctor: argv is nullptr");
+    assert  (txt && "txt_ctor: txt is nullptr");
 
-    *file_size = text_get_size(txt_file);
-    char *dynamic_memory = (char *) calloc(*file_size, sizeof(char));
+    txt->text_buffer = text_read(txt, argv);
+    txt->number_of_strings = create_ptr_begin_and_ptr_end(txt);
+}
 
-    fread(dynamic_memory, sizeof(char), *file_size, txt_file);
+char *text_read(Text_struct *txt, char *argv) {
+    assert(txt != nullptr  && "text_read: txt is nullptr\n");
+    assert(argv != nullptr && "text_read: argv is nullptr\n");
+
+    fopen_s(&txt->txt_file, &argv[0], "r");
+
+    txt->buffer_size = get_size(txt->txt_file);
+
+    char *dynamic_memory = (char *) calloc(txt->buffer_size, sizeof(char));
+    txt->buffer_size = fread(dynamic_memory, sizeof(char), txt->buffer_size, txt->txt_file);
+
+    fclose(txt->txt_file);
     return dynamic_memory;
 }
 
-size_t text_get_size(FILE *tgs_txt_file) {
+size_t get_size(FILE *txt_file) {
+    assert(txt_file != nullptr);
 
-    fseek(tgs_txt_file, 0l, SEEK_END);
-    int tgs_file_size = ftell(tgs_txt_file);
-    fseek(tgs_txt_file, 0l, SEEK_SET);
+    fseek(txt_file, 0l, SEEK_END);
+    int temp_size = ftell(txt_file);
+    fseek(txt_file, 0l, SEEK_SET);
 
-    return tgs_file_size;
+    return temp_size;
 }
 
-int text_ptrs_realoc_to_nstings(char ***array_of_pointers, int **text_lines_starts_index, char **dynamic_text, size_t tprtn_text_size) {
-    int dynam_index = 0, temporary_nstrings = 1;
-    size_t temporary_size = tprtn_text_size - 1;
+int create_ptr_begin_and_ptr_end(Text_struct *txt) {
 
-    *array_of_pointers = (char **) calloc(tprtn_text_size, sizeof(char *));
-    *text_lines_starts_index = (int *) calloc(tprtn_text_size, sizeof(int));
+    int temporary_number_of_strings = 1;
+    size_t temporary_str_len = 0;
 
-    while (temporary_size > 0) {
-        temporary_size--;
-        if (*(*dynamic_text + dynam_index) == '\n') {
-            temporary_nstrings++;
-            *(*dynamic_text + dynam_index) = '\0';
+    txt->sorted_pointers = (Line_info *) calloc(txt->buffer_size, sizeof(Line_info));
 
-            *(*text_lines_starts_index + temporary_nstrings - 1) = dynam_index + 1;
+    txt->sorted_pointers->ptr_begin = &txt->text_buffer[0];
+
+    for (size_t temporary_size = 0; temporary_size < txt->buffer_size; temporary_size++) {//for
+        temporary_str_len++;
+        if (txt->text_buffer[temporary_size] == '\n') {
+            txt->sorted_pointers[temporary_number_of_strings - 1].str_len = temporary_str_len;
+            temporary_str_len = 0;
+            
+            if (txt->text_buffer[temporary_size + 1] != EOF) {
+                txt->sorted_pointers[temporary_number_of_strings].ptr_begin = &txt->text_buffer[temporary_size + 1];
+            }
+            temporary_number_of_strings++;
         }
-        dynam_index++;
     }
+    txt->text_buffer[txt->buffer_size] = '\0';
+    txt->sorted_pointers = (Line_info *)realloc((Line_info *)txt->sorted_pointers, temporary_number_of_strings * sizeof(Line_info) );
 
-    return temporary_nstrings;
+    return temporary_number_of_strings;
 }
 
-void text_create_ptrs(char ***pointers, char **dynamic_memory, size_t file_n_strings, int *text_lines_starts_index) {
-    for (int str = 0; str < file_n_strings; str++) {
-        *(*pointers + str) = (*dynamic_memory + text_lines_starts_index[str]);
-    }
+void my_sort_and_print(Text_struct *txt, FILE *output_file) {
+    assert(output_file != nullptr);
+    assert(txt != nullptr);
+
+    txt->mode_of_sorting = 0;
+    my_qsort(txt->sorted_pointers, txt->number_of_strings, sizeof(Line_info), txt->mode_of_sorting, str_cmp_with_mode);
+    fprintf(output_file, "sorted text\n");
+    print_text_to_file(txt->sorted_pointers, txt->number_of_strings, output_file);
+
+    txt->mode_of_sorting = 1;
+    fprintf(output_file, "\nsorted end text\n");
+    my_qsort(txt->sorted_pointers, txt->number_of_strings, sizeof(Line_info), txt->mode_of_sorting, str_cmp_with_mode);
+    print_text_to_file(txt->sorted_pointers, txt->number_of_strings, output_file);
+
+    fprintf(output_file, "\noriginal text\n");
+    fprintf(output_file, txt->text_buffer);
+
+}
+
+void txt_struct_dtor(Text_struct *txt) {
+    assert(txt->sorted_pointers);
+    assert(txt->text_buffer);
+    
+    free(txt->sorted_pointers);
+    free(txt->text_buffer);
 }
