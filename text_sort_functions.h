@@ -5,29 +5,20 @@
 
 ///\param INT_NAN an initial value that signals that the variable has not
 /// yet been entered by the user or changed by the program
-int const INT_NAN = -1;
-
-enum {
-    ///\param SORTING_BEGIN shows that the mode of lexicographic comparison from the beginning of the line is selected
-    SORTING_BEGIN = 0,
-    ///\param SORTING_END indicates that the lexicographic comparison from the end of the line is selected
-    SORTING_END = 1
-};
+extern int const INT_NAN;
 
 ///\brief sorts the entered text in user-selected sorts and outputs it to a specific file
 /// \param text_str is a text structure that contains an array of pointers to lines of the original text
 /// \param output_file file to output sorted and original text
 void my_sort_and_print(Text_struct *text_str, FILE *output_file);
 
-///\brief returns mode number like **int**
-int choose_method_of_sorting();
-
-///brief a special compiler that can determine where the user wants to sort the string from (start or end)
-int str_cmp_with_mode(const void *a, const void *b, int mode);
-
 ///\brief comparator of two variable types (void *) works with values within one array
-///refers to functions *is_alpha ()** and *equal ()* used by **my_qsort ()**
+///refers to functions *is_letter ()** and *equal ()* used by **my_qsort ()**
 /// when using ** SORTING_BEGIN ** method
+/// \param a path of first string to compare
+/// \param b path of second string to compare
+/// \param step in which way string cmp should move when compare chars
+/// \return
 int string_cmp(const void *a, const void *b, int step);
 
 /// \brief similar to qsort function accepts an array of type (void *) number of elements,
@@ -36,7 +27,21 @@ int string_cmp(const void *a, const void *b, int step);
 /// \param n_of_element number of elements
 /// \param size_of_element size of one element
 /// \param cmp string comparator
-void my_qsort(void *arr, size_t n_of_element, size_t size_of_element, size_t mode_of_soring, int (*cmp)(const void *a, const void *b, int mode));
+void my_qsort(void *arr, size_t n_of_element, size_t size_of_element, int (*cmp)(const void *a, const void *b));
+
+///\brief comparator of two variable types (void *) works with values within one array
+///refers to functions *is_letter ()** and *equal ()* used by **my_qsort ()**
+/// when using ** SORTING_BEGIN ** method
+/// \param a path of first string to compare
+/// \param b path of second string to compare
+int strcmp_forward(const void *a, const void *b);
+
+///\brief comparator of two variable types (void *) works with values within one array
+///refers to functions *is_letter ()** and *equal ()* used by **my_qsort ()**
+/// when using ** SORTING_BEGIN ** method
+/// \param a path of first string to compare
+/// \param b path of second string to compare
+int strcmp_reverse(const void *a, const void *b);
 
 ///\brief finds out if * ch is a letter (bool answer = true) or not (bool answer = false)
 bool is_letter(char const *ch);
@@ -57,7 +62,7 @@ int swap(Line_info *elem1, Line_info *elem2, size_t size_of_element);
 /// \param size_of_element the size of one element that we want to shift
 /// \param mode_of_sorting sorting modification (sorting from end of line / beginning of line)
 /// \param cmp selected comprator
-void partition(void *start, int *right, int *last, int *tmp, size_t size_of_element, size_t mode_of_sorting,
-               int (*cmp)(const void *a, const void *b, int mode));
+void partition(void *start, int right, int *last, int tmp, size_t size_of_element,
+               int (*cmp)(const void *a, const void *b));
 
 #endif //ONEGIN6_TEXT_SORT_FUNCTIONS_H
