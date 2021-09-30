@@ -20,13 +20,12 @@ struct Text_struct {
     size_t number_of_strings     = NULL;
     char *text_buffer            = NULL;
     Line_info *sorted_pointers   = NULL;
-    size_t mode_of_sorting       = NULL;
 };
 
-/// \ brief function creates a buffer where all text and an array of pointers to the beginning and end of lines will be saved
-/// \ param argv the name of the file that is opened to read the text
-/// \ param text_str is a structure containing a buffer where text can be stored in dynamic memory
-void txt_struct_ctor(char *argv, Text_struct *text_str);
+///\brief function creates a buffer where all text and an array of pointers to the beginning and end of lines will be saved
+/// \param file_name the name of the file that is opened to read the text
+/// \param text_str is a structure containing a buffer where text can be stored in dynamic memory
+void txt_struct_ctor(char *file_name, Text_struct *text_str);
 
 ///\brief reads text file and save him in text_buffer
 /// \param argv int form char * (file.txt) which get from console
@@ -45,7 +44,7 @@ size_t get_size(FILE *txt_file);
 /// \param buffer received buffer
 /// \param buffer_size size of received buffer
 /// \return
-size_t count_strings_in_buffer(char *buffer, size_t buffer_size);
+size_t count_strings_in_buffer(const char *buffer, size_t buffer_size);
 
 ///\brief creates mmarray of size pointers equal to the number of lines in the text file
 /// \param array_of_pointers an array of pointers where the addresses of the beginning of lines of a text document are stored
