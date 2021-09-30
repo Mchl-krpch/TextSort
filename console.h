@@ -2,10 +2,10 @@
 #define ONEGIN6_CONSOLE_H
 
 ///\param RUS_wCODE stores the encoding number windows1251
-unsigned int const RUS_wCODE = 1251;
+extern unsigned int const RUS_wCODE;
 
 ///\brief special char const. Use it when you need to explain user how to work your program
-extern char *const help;
+extern const char *const help;
 
 ///\brief puts Russian encoding
 void encoding_set_rus();
