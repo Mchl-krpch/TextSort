@@ -69,8 +69,8 @@ int strcmp_reverse(const void *a, const void *b) {
 }
 
 int string_cmp(const void *a, const void *b, int step) {
-    assert (a != nullptr && "cmp: &a = nullptr");
-    assert (b != nullptr && "cmp: &b = nullptr");
+    assert (a != NULL && "cmp: &a = nullptr");
+    assert (b != NULL && "cmp: &b = nullptr");
 
     char *ch1 = (char *) a;
     char *ch2 = (char *) b;
@@ -92,6 +92,10 @@ int string_cmp(const void *a, const void *b, int step) {
 }
 
 int swap(Line_info *elem1, Line_info *elem2, size_t size_of_element) {
+    assert(elem1 != NULL && "swap: elem1 = NULL");
+    assert(elem2 != NULL && "swap: elem2 = NULL");
+
+
     Line_info temp = *(Line_info *) elem1;
     *elem1 = *elem2;
     *elem2 = temp;
