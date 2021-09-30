@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
 
     txt_struct_ctor(argv[1], &text_str);
 
-    FILE *output_file;
+    FILE    *output_file;
     fopen_s(&output_file, "output_onegin.txt", "w");
 
     my_sort_and_print(&text_str, output_file);
